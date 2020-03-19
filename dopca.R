@@ -1,3 +1,4 @@
+if(!require('paran')) install.packages('paran', dependencies=TRUE)
 dopca <- function(x, n, iters=1000, cent=95) {
     out <- paran(x, n, iterations=iters, centile=cent, quietly=T, status=F)
     ev <- out$Ev
