@@ -1,0 +1,196 @@
+
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> rm(list=ls())
+> #if(!require('doParallel')) install.packages('doParallel', dependencies=TRUE)
+> #ncores <- detectCores()
+> #cl <- makeCluster(ncores, type="SOCK")
+> 
+> #setwd('/Volumes/TUWORK/Documents/Missing_Data')
+> setwd('~/Missing_Data')
+> source('simdata.R')
+Loading required package: MASS
+> source('mkmats.R')
+Loading required package: psych
+> source('dopcamat.R')
+Loading required package: paran
+> source('Kaiser_Jolliffe_Proflik.R')
+> source('EKC.R')
+> 
+> reps <- 1000
+> c <- .4
+> r <- .5
+> bigout <- matrix(nrow=0, ncol=11)
+> 
+> samp <- c(100, 250, 1000)
+> nf <- c(3, 5, 10)
+> nipc <- c(3, 5, 10)
+> pctmiss <- c(.1, .25, .5)
+> # samp <- 100
+> # nf <- 1
+> # nipc <- 3
+> # reps <- 2
+> # pctmiss <- .1
+> 
+> for (n in samp) {
++     for (f in nf) {
++         for (ipc in nipc) {
++             for (pmiss in pctmiss) {
++                 for (iter in 1:reps) {
++                   print(as.integer(c(n, f, ipc, (100*pmiss), iter)))
++                     # Generate Data
++                     mydata <- simdata(n=n, f=f, ipc=ipc, c=c, r=r, pmiss=pmiss)
++                     
++                     # Generate Matrices
++                     mymats <- mkmats(mydata)
++                     
++                     # Generate and Process Eigenvalues
++                     invisible(myout <- rbind(dopcamat(n=mymats$n, mat=mymats$cmat),
++                                    dopcamat(n=mymats$n, mat=mymats$rmat)))
++                     cond <- rbind(cbind(iter, n, f, ipc, pmiss, 'pearson'),
++                                   cbind(iter, n, f, ipc, pmiss, 'tetrachoric'))
++                     colnames(cond)[6] <- 'corrtype'
++                     myout <- cbind(cond,myout)
++                     
++                     # Handle Output
++                     bigout <- rbind(bigout, myout)
++                 }
++             }
++         }
++     }
++ }
+[1] 100   3   3  10   1
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   2
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   3
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   4
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   5
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   6
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   7
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   8
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10   9
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  10
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  11
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  12
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  13
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  14
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  15
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  16
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  17
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  18
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  19
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  20
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  21
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  22
+
+Using eigendecomposition of provided correlation matrix.
+
+Using eigendecomposition of provided correlation matrix.
+[1] 100   3   3  10  23
+
+Using eigendecomposition of provided correlation matrix.
+Error in if (AdjEv[x] >= 0) { : argument is of length zero
+Calls: rbind -> dopcamat -> paran
+In addition: There were 22 warnings (use warnings() to see them)
+Execution halted
