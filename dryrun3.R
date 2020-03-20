@@ -4,8 +4,9 @@ start <- proc.time()
 set.seed(72855)
 if(!require('doParallel')) install.packages('doParallel', dependencies=TRUE)
 if(!require('foreach')) install.packages('foreach', dependencies=TRUE)
-ncores <- detectCores()
-registerDoParallel(cl=cl, cores=(ncores-1))
+ncores <- detectCores() - 1
+
+registerDoParallel(cl=cl, cores=ncores)
 #setwd('/Volumes/TUWORK/Documents/Missing_Data')
 #setwd('~/Missing_Data')
 source('simdata.R')
@@ -14,7 +15,7 @@ source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 2
+reps <- 1000
 c <- .4
 r <- .5
 
@@ -55,8 +56,8 @@ foreach(n=samp, .combine=rbind) %:%
                 bigx <- rbind(bigx, myx)
 
 save(bigx, file='bigx3.Rdata')
-#stopImplicitCluster()
-stopCluster(cl)
+stopImplicitCluster()
+#stopCluster(cl)
 stop <- proc.time()
 time <- stop - start
 time
