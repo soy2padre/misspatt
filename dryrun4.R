@@ -18,7 +18,7 @@ source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 2
+reps <- 1000
 c <- .4
 r <- .5
 
@@ -67,15 +67,14 @@ myx <- foreach(pmiss=1:lm, .combine=rbind) %:%
                   cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'tetrachoric'))
     colnames(cond)[5] <- 'pmiss'
     colnames(cond)[6] <- 'corrtype'
-    # myout <- cbind(cond,myout)
-    cbind(cond,myout)
-    # # Handle Output
-    # bigout <- rbind(bigout, myout)
+    myout <- cbind(cond,myout)
+    # Handle Output
+    #bigout <- rbind(bigout, myout)
+    rbind(bigout, myout)
   }
 bigx <- rbind(bigx, myx)
 
 save(bigx, file='bigx3.Rdata')
-#stopCluster(cl)
 stopImplicitCluster()
 stopCluster(cl)
 stop <- proc.time()
