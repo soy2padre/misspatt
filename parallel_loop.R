@@ -8,7 +8,7 @@ if(!require('foreach')) install.packages('foreach', dependencies=TRUE)
 ncores <- detectCores() - 1
 cl <- makeCluster(ncores)
 registerDoParallel(cl)
-iters <- 100
+iters <- 1000
 as <- c(1, 2)
 bs <- c(3, 4)
 cs <- c(5, 6)

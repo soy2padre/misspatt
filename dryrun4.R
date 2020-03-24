@@ -18,7 +18,7 @@ source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 1000
+reps <- 10
 c <- .4
 r <- .5
 
@@ -36,8 +36,8 @@ totlen <- reps*ls*lf*li*lm
 # f <- c(3)
 pkgs <- c('paran', 'psych', 'MASS', 'parallel')
 
-bigx <- matrix(nrow=0, ncol=11)
-bigout <- matrix(nrow=0, ncol=11)
+#bigx <- matrix(nrow=0, ncol=11)
+#bigout <- matrix(nrow=0, ncol=11)
 myx <- matrix(nrow=0, ncol=11)
 
 rng <- RNGseq(totlen, 87658653)
@@ -67,14 +67,15 @@ myx <- foreach(pmiss=1:lm, .combine=rbind) %:%
                   cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'tetrachoric'))
     colnames(cond)[5] <- 'pmiss'
     colnames(cond)[6] <- 'corrtype'
-    myout <- cbind(cond,myout)
+    #myout <- cbind(cond,myout)
+    cbind(cond,myout)
     # Handle Output
     #bigout <- rbind(bigout, myout)
-    rbind(bigout, myout)
+    #rbind(bigout, myout)
   }
-bigx <- rbind(bigx, myx)
+#bigx <- rbind(bigx, myx)
 
-save(bigx, file='bigx3.Rdata')
+save(myx, file='bigx4.Rdata')
 stopImplicitCluster()
 stopCluster(cl)
 stop <- proc.time()
