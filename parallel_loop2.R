@@ -1,21 +1,29 @@
-# Master code for running analyses
+# Tabula Rasa
 rm(list=ls())
+
+# Start Timing
 start <- proc.time()
 
+# Dependencies
 if(!require('doRNG')) install.packages('doRNG', dependencies=TRUE)
 if(!require('doParallel')) install.packages('doParallel', dependencies=TRUE)
-if(!require('parallel')) install.packages('parallel', dependencies=TRUE)
+if(!require('data.table')) install.packages('data.table', dependencies=TRUE)
 if(!require('foreach')) install.packages('foreach', dependencies=TRUE)
+
+# Parallel Setup
 ncores <- detectCores() - 1
 cl <- makeCluster(ncores)
 registerDoParallel(cl)
+
+# Load Functions
 source('simdata.R')
 source('mkmats.R')
 source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 100
+# Simulation Parameters
+reps <- 2
 c <- .4
 r <- .5
 
@@ -29,26 +37,37 @@ li <- length(nipc)
 lm <- length(pctmiss)
 totlen <- reps*ls*lf*li*lm
 
+# Specify that these carry across loops
 pkgs <- c('paran', 'psych', 'MASS', 'parallel')
 
+# Initialize output matrix
 myx <- matrix(nrow=0, ncol=11)
 
+# Establish seed for replication
 rng <- RNGseq(totlen, 87658653)
 
-#mcoptions <- list(preschedule=FALSE, mc.set.seed=TRUE)
-
+# Run simulation loop
 myx <- foreach(pm=1:lm, .combine=rbind) %:%
   foreach(n=1:ls, .combine=rbind) %:%
   foreach(f=1:lf, .combine=rbind) %:%
   foreach(ipc=1:li, .combine=rbind) %:%
   foreach(iter=1:reps, .combine=rbind, .packages=pkgs, .inorder=FALSE, .errorhandling="remove") %dopar% {
+    # Make this many sets of seeds
     k <- (pm - 1)*ls*lf*li*reps + 
       (n - 1)*lf*li*reps +
       (f - 1)*li*reps +
       (ipc - 1)*reps + iter
+    
+    # Seed for _this_ iteration
     rngtools::setRNG(rng[[k]])
+    
+    # Create data matrix
     mydata <- simdata(n=samp[n], f=nf[f], ipc=nipc[ipc], c=c, r=r, pmiss=pctmiss[pm])
+    
+    # Convert it to matrix form
     mymats <- mkmats(mydata)
+    
+    # Run PCA on correlation and polychoric matrices with extraction criteria
     myout <- rbind(dopcamat(n=mymats$n, mat=mymats$cmat),
                    dopcamat(n=mymats$n, mat=mymats$rmat))
     cond <- rbind(cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pm], 'pearson'),
@@ -56,12 +75,17 @@ myx <- foreach(pm=1:lm, .combine=rbind) %:%
     colnames(cond)[5] <- 'pmiss'
     colnames(cond)[6] <- 'corrtype'
     cbind(cond,myout)
-    #cbind(iter, nipc[ipc], nf[f], samp[n], pctmiss[pm])
   }
 
-save(myx, file='bigx4.Rdata')
+# Convert and save results
+myx <- as.data.table(myx)
+save(myx, file='misspatt00.Rdata')
+
+# Stop cluster
 stopImplicitCluster()
 stopCluster(cl)
+
+# Stop and return timer
 stop <- proc.time()
 time <- stop - start
 time
