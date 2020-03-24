@@ -18,7 +18,7 @@ source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 10
+reps <- 1000
 c <- .4
 r <- .5
 
@@ -55,30 +55,30 @@ myx <- foreach(pmiss=1:lm, .combine=rbind) %:%
       (ipc - 1)*reps + iter
     rngtools::setRNG(rng[[k]])
     # Generate Data
-    mydata <- simdata(n=samp[n], f=nf[f], ipc=nipc[ipc], c=c, r=r, pmiss=pctmiss[pmiss])
-    
-    # Generate Matrices
-    mymats <- mkmats(mydata)
-    
-    # Generate and Process Eigenvalues
-    myout <- rbind(dopcamat(n=mymats$n, mat=mymats$cmat),
-                   dopcamat(n=mymats$n, mat=mymats$rmat))
-    cond <- rbind(cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'pearson'),
-                  cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'tetrachoric'))
-    colnames(cond)[5] <- 'pmiss'
-    colnames(cond)[6] <- 'corrtype'
-    #myout <- cbind(cond,myout)
-    cbind(cond,myout)
+    # mydata <- simdata(n=samp[n], f=nf[f], ipc=nipc[ipc], c=c, r=r, pmiss=pctmiss[pmiss])
+    # 
+    # # Generate Matrices
+    # mymats <- mkmats(mydata)
+    # 
+    # # Generate and Process Eigenvalues
+    # myout <- rbind(dopcamat(n=mymats$n, mat=mymats$cmat),
+    #                dopcamat(n=mymats$n, mat=mymats$rmat))
+    # cond <- rbind(cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'pearson'),
+    #               cbind(iter, n, f=nf[f], ipc=nipc[ipc], pctmiss[pmiss], 'tetrachoric'))
+    # colnames(cond)[5] <- 'pmiss'
+    # colnames(cond)[6] <- 'corrtype'
+    # #myout <- cbind(cond,myout)
+    # cbind(cond,myout)
     # Handle Output
     #bigout <- rbind(bigout, myout)
     #rbind(bigout, myout)
+    cbind(iter, nipc[ipc], nf[f], samp[n], pctmiss[pmiss])
   }
 #bigx <- rbind(bigx, myx)
 
-save(myx, file='bigx4.Rdata')
+#save(myx, file='bigx4.Rdata')
 stopImplicitCluster()
 stopCluster(cl)
 stop <- proc.time()
 time <- stop - start
 time
-
