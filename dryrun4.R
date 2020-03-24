@@ -18,7 +18,7 @@ source('dopcamat.R')
 source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
-reps <- 10
+reps <- 1000
 c <- .4
 r <- .5
 
