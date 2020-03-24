@@ -135,3 +135,22 @@ Loading required package: paran
 +     colnames(cond)[6] <- 'corrtype'
 +     cbind(cond, myout)
 +   }
+> 
+> # Convert and save results
+> misspatt <- as.data.table(misspatt)
+> save(misspatt, file = 'misspatt00.Rdata')
+> 
+> # Stop cluster
+> stopImplicitCluster()
+> stopCluster(cl)
+> 
+> # Stop and return timer
+> stop <- proc.time()
+> time <- stop - start
+> time
+     user    system   elapsed 
+  129.252    20.885 11000.577 
+> 
+> proc.time()
+     user    system   elapsed 
+  129.455    20.929 11000.801 
