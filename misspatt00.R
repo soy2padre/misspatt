@@ -93,7 +93,7 @@ misspatt <- foreach(pm = 1:lm, .combine = rbind) %:%
         cbind(iter, n, f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson'),
         cbind(
           iter,
-          n,
+          samp[n],
           f = nf[f],
           ipc = nipc[ipc],
           pctmiss[pm],
