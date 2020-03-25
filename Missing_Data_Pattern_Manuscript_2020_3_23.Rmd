@@ -20,7 +20,8 @@ csl: apa.csl
 rm(list=ls())
 #setwd('~/Documents/Missing_Data')
 #setwd('/Volumes/GoogleDrive/Shared drives/Missing Data/Missing_Data_Patterns/simulations_AD_added_02082018')
-setwd('/Volumes/Macintosh HD/Users/tub00573/Documents/misspatt')
+#setwd('/Volumes/Macintosh HD/Users/tub00573/Documents/misspatt')
+setwd('~/Documents/misspatt')
 ```
 
 # Author Note
