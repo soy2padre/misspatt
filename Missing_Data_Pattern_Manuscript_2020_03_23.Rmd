@@ -1,8 +1,8 @@
 ---
 title: "Developing a Systematic Approach to Identifying Missing Data Patterns and Mechanisms in Multivariate Psychological Research"
-author: "Ting Dai & Adam Davey"
-date: "March 24, 2020"
-output: html_document
+author: "&copy; Ting Dai & Adam Davey"
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
+output: word_document
 bibliography: xMissingV2.bib
 csl: apa.csl
 
@@ -14,20 +14,179 @@ csl: apa.csl
 # Ting to e-mail Marcoulides about supplemental materials
 # Fix headings and citations
 # Review and revise design (Can we simplify)
+# Ting: OK that right now we do PCA and not PAF? Easy to switch
+# Ting: I don't believe we have MAP coded up in here
+# Velicer, W. F., Eaton, C. A., and Fava, J. L. (2000). Construct explication through factor or component analysis: A review and evaluation of alternative procedures for determining the number of
+# factors or components. In R. D. Goffin & E. Helmes, eds., Problems and solutions in human assessment (p.p. 41-71). Boston: Kluwer
+# See also: Package ‘paramap’
+# https://github.com/bpoconnor/paramap/blob/master/R/MAP.R
 ```
 
-```{r, echo=FALSE, eval=TRUE}
-rm(list=ls())
-#setwd('~/Documents/Missing_Data')
-#setwd('/Volumes/GoogleDrive/Shared drives/Missing Data/Missing_Data_Patterns/simulations_AD_added_02082018')
-#setwd('/Volumes/Macintosh HD/Users/tub00573/Documents/misspatt')
-setwd('~/Documents/misspatt')
+```{r run_simulation, echo=FALSE, eval=FALSE, cache=TRUE}
+# Tabula Rasa
+rm(list = ls())
+
+# Start Timing
+start <- proc.time()
+
+# Dependencies
+if (!require('doRNG'))
+  install.packages('doRNG', dependencies = TRUE)
+if (!require('doParallel'))
+  install.packages('doParallel', dependencies = TRUE)
+if (!require('data.table'))
+  install.packages('data.table', dependencies = TRUE)
+if (!require('foreach'))
+  install.packages('foreach', dependencies = TRUE)
+
+# Parallel Setup
+ncores <- detectCores() - 1
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
+
+# Load Functions
+source('simdata.R')
+source('mkmats.R')
+source('dopcamat.R')
+source('Kaiser_Jolliffe_Proflik.R')
+source('EKC.R')
+
+# Simulation Parameters
+reps <- 1000
+c <- .3
+r <- .7
+
+samp <- c(100, 250, 1000)
+nf <- c(3, 5, 10)
+nipc <- c(3, 5, 10)
+pctmiss <- c(.1, .25, .5)
+ls <- length(samp)
+lf <- length(nf)
+li <- length(nipc)
+lm <- length(pctmiss)
+totlen <- reps * ls * lf * li * lm
+
+# Specify that these carry across loops
+pkgs <- c('paran', 'psych', 'MASS', 'parallel')
+
+# Initialize output matrix
+myx <- matrix(nrow = 0, ncol = 11)
+
+# Establish seed for replication
+rng <- RNGseq(totlen, 87658653)
+
+# Run simulation loop
+misspatt <- foreach(pm = 1:lm, .combine = rbind) %:%
+  foreach(n = 1:ls, .combine = rbind) %:%
+  foreach(f = 1:lf, .combine = rbind) %:%
+  foreach(ipc = 1:li, .combine = rbind) %:%
+  foreach(
+    iter = 1:reps,
+    .combine = rbind,
+    .packages = pkgs,
+    .inorder = FALSE,
+    .errorhandling = "remove"
+  ) %dopar% {
+    # Make this many sets of seeds
+    k <- (pm - 1) * ls * lf * li * reps +
+      (n - 1) * lf * li * reps +
+      (f - 1) * li * reps +
+      (ipc - 1) * reps + iter
+    
+    # Seed for _this_ iteration
+    rngtools::setRNG(rng[[k]])
+    
+    # Create data matrix
+    mydata <-
+      simdata(
+        n = samp[n],
+        f = nf[f],
+        ipc = nipc[ipc],
+        c = c,
+        r = r,
+        pmiss = pctmiss[pm]
+      )
+    
+    # Convert it to matrix form
+    mymats <- mkmats(mydata)
+    
+    # Run PCA on correlation and polychoric matrices with extraction criteria
+    myout <- rbind(dopcamat(n = mymats$n, mat = mymats$cmat),
+                   dopcamat(n = mymats$n, mat = mymats$rmat))
+    cond <-
+      rbind(
+        cbind(iter, n, f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson'),
+        cbind(
+          iter,
+          samp[n],
+          f = nf[f],
+          ipc = nipc[ipc],
+          pctmiss[pm],
+          'tetrachoric'
+        )
+      )
+    colnames(cond)[5] <- 'pmiss'
+    colnames(cond)[6] <- 'corrtype'
+    cbind(cond, myout)
+  }
+
+# Convert and save results
+misspatt <- as.data.table(misspatt)
+save(misspatt, file = 'misspatt00.Rdata')
+
+# Stop cluster
+stopImplicitCluster()
+stopCluster(cl)
+
+# Stop and return timer
+stop <- proc.time()
+time <- stop - start
+time
+```
+
+```{r analyze_simulation, echo=FALSE, eval=TRUE, cache=TRUE}
+# DATA ANALYSIS
+# Tabula Rasa
+rm(list = ls())
+
+# Dependencies
+if (!require('tidyverse'))
+  install.packages('tidyverse', dependencies = TRUE)
+if (!require('kableExtra'))
+  install.packages('kableExtra', dependencies = TRUE)
+
+# Load Data
+load('misspatt00.Rdata')
+
+# Recode Ns
+misspatt$n <- recode_factor(misspatt$n, `1`='100', `2`='250', `3`='1000')
+
+# Create Summary Variables
+misspatt2 <- misspatt %>%
+  mutate(pctparan=nparan==f,
+         pctkaiser=nkaiser==f,
+         pctjolliffe=njolliffe==f,
+         pctproflik=nproflik==f,
+         pctekc=nekc==f)
+
+# Turn into Large Table
+bigtable <- 
+  misspatt2 %>%
+  group_by(n, f, ipc, pmiss, corrtype) %>%
+  summarize(mean(pctparan),
+            mean(pctkaiser),
+            mean(pctjolliffe),
+            mean(pctproflik),
+            mean(pctekc), na.rm=TRUE)
+
+# Write Output
+write_excel_csv(bigtable, path='./bigtable.csv')
 ```
 
 # Author Note
 
-Ting Dai, Department of Educational Psychology, University of Illinois at Chicago; Adam Davey, Behavioral Health and Nutrition, University of Delaware. 
-Davey was supported by grants from the National Institutes of Health (R40MC26818, R01DC013196, R01HL092910, R01HD069769, R21CA158877, and R01CA158361) and United States Department of Agriculture (AG-3198-B-10-0028, 2012-68001-19616, and 2011-68001-30148). Dai was supported by grants from the Department of Education (R305C080009) and National Science Foundation (0814901, 0815245, and DRL-1252436). We thank Joseph Glutting, Scott Maitland, Tony Perez, and Jyoti Savla for helpful comments on an earlier draft of this manuscript.
+Ting Dai, Department of Educational Psychology, University of Illinois at Chicago; Adam Davey, Department of Behavioral Health and Nutrition, University of Delaware. 
+Research reported in this publication was supported by the National Cancer Institute of the National Institutes of Health under Award Number R01CA194178 (Davey, PI). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health. Dai was supported by grants from the Department of Education (R305C080009) and National Science Foundation (0814901, 0815245, and DRL-1252436). We thank Joe Glutting, Scott Maitland, Tony Perez, and Jyoti Savla for helpful comments on an earlier draft of this manuscript.
 
 # Abstract
 
