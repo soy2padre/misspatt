@@ -1,0 +1,633 @@
+-----------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/adavey/Documents/Missing_Data/Missing_Data_Patterns/mylog
+> .log
+  log type:  text
+ opened on:  28 Mar 2020, 10:05:52
+
+. * Below simulates some data for the workflow;
+. set more off;
+
+. * Uncomment line below if you are having problems with graphics;
+. *set graphics off;
+. set seed 77773;
+
+. set obs 1000;
+number of observations (_N) was 0, now 1,000
+
+. generate age = int(20 + 60*runiform());
+
+. generate iq = int(100 + 16*rnormal() - 0.15*(age-50));
+
+. * Step 2.1 Frequencies / Summary Statistics;
+. tab1 iq age, missing;
+
+-> tabulation of iq  
+
+         iq |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         51 |          2        0.20        0.20
+         53 |          1        0.10        0.30
+         55 |          2        0.20        0.50
+         56 |          3        0.30        0.80
+         57 |          2        0.20        1.00
+         59 |          1        0.10        1.10
+         60 |          1        0.10        1.20
+         62 |          1        0.10        1.30
+         63 |          2        0.20        1.50
+         64 |          3        0.30        1.80
+         65 |          4        0.40        2.20
+         66 |          5        0.50        2.70
+         67 |          3        0.30        3.00
+         68 |          1        0.10        3.10
+         69 |          3        0.30        3.40
+         70 |          4        0.40        3.80
+         71 |          5        0.50        4.30
+         72 |          4        0.40        4.70
+         73 |          9        0.90        5.60
+         74 |          6        0.60        6.20
+         75 |          6        0.60        6.80
+         76 |         13        1.30        8.10
+         77 |          9        0.90        9.00
+         78 |         10        1.00       10.00
+         79 |         12        1.20       11.20
+         80 |         15        1.50       12.70
+         81 |         15        1.50       14.20
+         82 |         16        1.60       15.80
+         83 |          7        0.70       16.50
+         84 |         14        1.40       17.90
+         85 |         21        2.10       20.00
+         86 |         26        2.60       22.60
+         87 |         15        1.50       24.10
+         88 |         23        2.30       26.40
+         89 |         14        1.40       27.80
+         90 |         25        2.50       30.30
+         91 |         18        1.80       32.10
+         92 |         24        2.40       34.50
+         93 |         24        2.40       36.90
+         94 |         17        1.70       38.60
+         95 |         27        2.70       41.30
+         96 |         34        3.40       44.70
+         97 |         29        2.90       47.60
+         98 |         34        3.40       51.00
+         99 |         22        2.20       53.20
+        100 |         27        2.70       55.90
+        101 |         24        2.40       58.30
+        102 |         27        2.70       61.00
+        103 |         14        1.40       62.40
+        104 |         20        2.00       64.40
+        105 |         22        2.20       66.60
+        106 |         20        2.00       68.60
+        107 |         27        2.70       71.30
+        108 |         20        2.00       73.30
+        109 |         18        1.80       75.10
+        110 |         16        1.60       76.70
+        111 |         21        2.10       78.80
+        112 |         13        1.30       80.10
+        113 |         18        1.80       81.90
+        114 |         15        1.50       83.40
+        115 |         17        1.70       85.10
+        116 |         16        1.60       86.70
+        117 |         18        1.80       88.50
+        118 |          8        0.80       89.30
+        119 |          6        0.60       89.90
+        120 |         14        1.40       91.30
+        121 |          9        0.90       92.20
+        122 |          2        0.20       92.40
+        123 |          4        0.40       92.80
+        124 |         13        1.30       94.10
+        125 |          9        0.90       95.00
+        126 |          9        0.90       95.90
+        127 |          7        0.70       96.60
+        128 |          2        0.20       96.80
+        129 |          4        0.40       97.20
+        130 |          4        0.40       97.60
+        131 |          3        0.30       97.90
+        132 |          3        0.30       98.20
+        133 |          2        0.20       98.40
+        134 |          4        0.40       98.80
+        135 |          1        0.10       98.90
+        136 |          1        0.10       99.00
+        137 |          1        0.10       99.10
+        138 |          1        0.10       99.20
+        139 |          2        0.20       99.40
+        140 |          1        0.10       99.50
+        141 |          1        0.10       99.60
+        142 |          3        0.30       99.90
+        152 |          1        0.10      100.00
+------------+-----------------------------------
+      Total |      1,000      100.00
+
+-> tabulation of age  
+
+        age |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         20 |         20        2.00        2.00
+         21 |         15        1.50        3.50
+         22 |         17        1.70        5.20
+         23 |         15        1.50        6.70
+         24 |         21        2.10        8.80
+         25 |         14        1.40       10.20
+         26 |         21        2.10       12.30
+         27 |         16        1.60       13.90
+         28 |         16        1.60       15.50
+         29 |         13        1.30       16.80
+         30 |         13        1.30       18.10
+         31 |         20        2.00       20.10
+         32 |         13        1.30       21.40
+         33 |         15        1.50       22.90
+         34 |         13        1.30       24.20
+         35 |         13        1.30       25.50
+         36 |         17        1.70       27.20
+         37 |         24        2.40       29.60
+         38 |         15        1.50       31.10
+         39 |         18        1.80       32.90
+         40 |          8        0.80       33.70
+         41 |         18        1.80       35.50
+         42 |         14        1.40       36.90
+         43 |         24        2.40       39.30
+         44 |         13        1.30       40.60
+         45 |         16        1.60       42.20
+         46 |         16        1.60       43.80
+         47 |         11        1.10       44.90
+         48 |         19        1.90       46.80
+         49 |         15        1.50       48.30
+         50 |         19        1.90       50.20
+         51 |         22        2.20       52.40
+         52 |         15        1.50       53.90
+         53 |         17        1.70       55.60
+         54 |         26        2.60       58.20
+         55 |         22        2.20       60.40
+         56 |         13        1.30       61.70
+         57 |         17        1.70       63.40
+         58 |         10        1.00       64.40
+         59 |         17        1.70       66.10
+         60 |         10        1.00       67.10
+         61 |         21        2.10       69.20
+         62 |         12        1.20       70.40
+         63 |         16        1.60       72.00
+         64 |         14        1.40       73.40
+         65 |         18        1.80       75.20
+         66 |         17        1.70       76.90
+         67 |         20        2.00       78.90
+         68 |         18        1.80       80.70
+         69 |         15        1.50       82.20
+         70 |         20        2.00       84.20
+         71 |         24        2.40       86.60
+         72 |         20        2.00       88.60
+         73 |         20        2.00       90.60
+         74 |         13        1.30       91.90
+         75 |         19        1.90       93.80
+         76 |         16        1.60       95.40
+         77 |         17        1.70       97.10
+         78 |         17        1.70       98.80
+         79 |         12        1.20      100.00
+------------+-----------------------------------
+      Total |      1,000      100.00
+
+. summarize iq age;
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+          iq |      1,000      98.691    16.06778         51        152
+         age |      1,000      49.808     17.3844         20         79
+
+. * Alternatively, use syntax below for considerably more information;
+. *summarize iq age, detail;
+. * Step 2.2 Univariate Plots;
+. hist iq;
+(bin=29, start=51, width=3.4827586)
+
+. * graph export "hist_iq.pdf", replace;
+. graph box iq;
+
+. * graph export "box_iq.pdf", replace;
+. qnorm iq;
+
+. * graph export "qnorm_iq.pdf", replace;
+. hist age;
+(bin=29, start=20, width=2.0344828)
+
+. * graph export "hist_age.pdf", replace;
+. graph box age;
+
+. * graph export "box_age.pdf", replace;
+. qnorm age;
+
+. * graph export "qnorm_age.pdf", replace;
+. * Step 2.3 Testing Normality of Distributions;
+. sktest iq;
+
+                    Skewness/Kurtosis tests for Normality
+                                                          ------ joint ------
+    Variable |        Obs  Pr(Skewness)  Pr(Kurtosis) adj chi2(2)   Prob>chi2
+-------------+---------------------------------------------------------------
+          iq |      1,000     0.9648        0.7760        0.08         0.9594
+
+. sktest age;
+
+                    Skewness/Kurtosis tests for Normality
+                                                          ------ joint ------
+    Variable |        Obs  Pr(Skewness)  Pr(Kurtosis) adj chi2(2)   Prob>chi2
+-------------+---------------------------------------------------------------
+         age |      1,000     0.5404        0.0000           .         0.0000
+
+. * Step 2.4 Scatterplot;
+. scatter iq age, sort;
+
+. * graph export "scatter_iq_age.pdf", replace;
+. * Step 2.5 Lowess;
+. lowess iq age, sort;
+
+. * graph export "lowess_iq_age.pdf", replace;
+. * Step 2.6 Estimate Model;
+. * First, estimate and store OLS model;
+. regress iq age;
+
+      Source |       SS           df       MS      Number of obs   =     1,00
+> 0
+-------------+----------------------------------   F(1, 998)       =     28.4
+> 2
+       Model |  7140.33548         1  7140.33548   Prob > F        =    0.000
+> 0
+    Residual |  250775.184       998  251.277739   R-squared       =    0.027
+> 7
+-------------+----------------------------------   Adj R-squared   =    0.026
+> 7
+       Total |  257915.519       999  258.173693   Root MSE        =    15.85
+> 2
+
+-----------------------------------------------------------------------------
+> -
+          iq |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval
+> ]
+-------------+---------------------------------------------------------------
+> -
+         age |   -.153786   .0288493    -5.33   0.000    -.2103982   -.097173
+> 9
+       _cons |   106.3508    1.52185    69.88   0.000     103.3644    109.337
+> 2
+-----------------------------------------------------------------------------
+> -
+
+. estimates store ols;
+
+. * Then estimate and store model with robust SEs;
+. regress iq age, vce(robust);
+
+Linear regression                               Number of obs     =      1,00
+> 0
+                                                F(1, 998)         =      28.9
+> 7
+                                                Prob > F          =     0.000
+> 0
+                                                R-squared         =     0.027
+> 7
+                                                Root MSE          =     15.85
+> 2
+
+-----------------------------------------------------------------------------
+> -
+             |               Robust
+          iq |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval
+> ]
+-------------+---------------------------------------------------------------
+> -
+         age |   -.153786   .0285727    -5.38   0.000    -.2098555   -.097716
+> 5
+       _cons |   106.3508   1.492223    71.27   0.000     103.4225     109.27
+> 9
+-----------------------------------------------------------------------------
+> -
+
+. estimates store robust;
+
+. * Step 2.7 Evaluate Model;
+. * No additional analyses or syntax for this section, so here's a handy figu
+> re;
+. graph twoway (lfitci iq age) (scatter iq age);
+
+. * graph export "twoway_fitted_cis.pdf", replace;
+. * Step 2.8 Regression Diagnostics;
+. * Things we can do with robust standard errors;
+. * First ensure robust standard error model is active;
+. estimates restore robust;
+(results robust are active now)
+
+. * Predicted values;
+. predict iqhat, xb;
+
+. * Predicted residuals;
+. predict iqres, resid;
+
+. hist iqres, normal;
+(bin=29, start=-50.429623, width=3.5463942)
+
+. * graph export "hist_iqres.pdf", replace;
+. swilk iqres;
+
+                   Shapiro-Wilk W test for normal data
+
+    Variable |        Obs       W           V         z       Prob>z
+-------------+------------------------------------------------------
+       iqres |      1,000    0.99859      0.888    -0.294    0.61572
+
+. * Hat test;
+. linktest;
+
+      Source |       SS           df       MS      Number of obs   =     1,00
+> 0
+-------------+----------------------------------   F(2, 997)       =     14.2
+> 0
+       Model |  7141.42294         2  3570.71147   Prob > F        =    0.000
+> 0
+    Residual |  250774.096       997  251.528682   R-squared       =    0.027
+> 7
+-------------+----------------------------------   Adj R-squared   =    0.025
+> 7
+       Total |  257915.519       999  258.173693   Root MSE        =     15.8
+> 6
+
+-----------------------------------------------------------------------------
+> -
+          iq |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval
+> ]
+-------------+---------------------------------------------------------------
+> -
+        _hat |   2.026584   15.60266     0.13   0.897    -28.59124    32.6444
+> 1
+      _hatsq |  -.0051977    .078992    -0.07   0.948    -.1602073    .149811
+> 9
+       _cons |  -50.65246   770.0149    -0.07   0.948    -1561.688    1460.38
+> 3
+-----------------------------------------------------------------------------
+> -
+
+. qnorm iqres;
+
+. * graph export "qnorm_iqres.pdf", replace;
+. szroeter age;
+
+Szroeter's test for homoskedasticity
+
+    Ho: variance constant
+    Ha: variance monotonic in age
+
+         chi2(1)      =     0.56
+         Prob > chi2  =   0.4542
+
+. rvfplot, yline(0);
+
+. * graph export "rvfplot.pdf", replace;
+. rvpplot age, yline(0);
+
+. * graph export "rvpplot_age.pdf", replace;
+. * Things we can do with OLS standard errors;
+. * First restore OLS estimates;
+. estimates restore ols;
+(results ols are active now)
+
+. estat hettest;
+
+Breusch-Pagan / Cook-Weisberg test for heteroskedasticity 
+         Ho: Constant variance
+         Variables: fitted values of iq
+
+         chi2(1)      =     0.60
+         Prob > chi2  =   0.4386
+
+. dfbeta age;
+                       _dfbeta_1: dfbeta(age)
+
+. lvr2plot;
+
+. * graph export "lvr2plot.pdf", replace;
+. /*
+> * Step 2.9 Tabling Results;
+> * NEVER type numbers you don't need to;
+> * Let the computer do the heavy lifting for you;
+> * Example 1 -- direct to Excel;
+> * Crap table, but all the information is where you put it;
+> quietly: estimates replay robust;
+> putexcel set "regression1.xls", sheet("Robust SEs") replace;
+> putexcel F1=("Number of obs") G1=(e(N));
+> putexcel F2=("F")             G2=(e(F));
+> putexcel F3=("Prob > F")      G3=(Ftail(e(df_m), e(df_r), e(F)));
+> putexcel F4=("R-squared")     G4=(e(r2));
+> putexcel F5=("Adj R-squared") G5=(e(r2_a));
+> putexcel F6=("Root MSE")      G6=(e(rmse));
+> matrix a = r(table)';
+> matrix a = a[.,1..6];
+> putexcel A8=matrix(a, names);
+> quietly: estimates replay ols;
+> putexcel set "regression1.xls", sheet("OLS SEs") modify;
+> putexcel F1=("Number of obs") G1=(e(N));
+> putexcel F2=("F")             G2=(e(F));
+> putexcel F3=("Prob > F")      G3=(Ftail(e(df_m), e(df_r), e(F)));
+> putexcel F4=("R-squared")     G4=(e(r2));
+> putexcel F5=("Adj R-squared") G5=(e(r2_a));
+> putexcel F6=("Root MSE")      G6=(e(rmse));
+> matrix a = r(table)';
+> matrix a = a[.,1..6];
+> putexcel A8=matrix(a, names);
+> * Example 2 -- also direct to Excel;
+> * Nicer table, but labels need to be changed;
+> outreg2 [robust ols] using "regression2",
+>  replace excel stats(coef ci pval)
+>  bdec(2) cdec(2) pdec(3) bracket(ci) noaster sideway;
+> log close;
+
+end of do-file
+
+. dfbeta age
+                       _dfbeta_2: dfbeta(age)
+
+. hist _dfbeta_1 
+(bin=29, start=-.12490468, width=.00884244)
+
+. update query
+(contacting http://www.stata.com)
+
+Update status
+    Last check for updates:  29 Mar 2020
+    New update available:    none         (as of 29 Mar 2020)
+    Current update level:    05 Mar 2020  (what's new)
+
+Possible actions
+
+    Do nothing; all files are up to date.
+
+. 
+
+. reg iq age
+
+      Source |       SS           df       MS      Number of obs   =     1,00
+> 0
+-------------+----------------------------------   F(1, 998)       =     28.4
+> 2
+       Model |  7140.33548         1  7140.33548   Prob > F        =    0.000
+> 0
+    Residual |  250775.184       998  251.277739   R-squared       =    0.027
+> 7
+-------------+----------------------------------   Adj R-squared   =    0.026
+> 7
+       Total |  257915.519       999  258.173693   Root MSE        =    15.85
+> 2
+
+-----------------------------------------------------------------------------
+> -
+          iq |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval
+> ]
+-------------+---------------------------------------------------------------
+> -
+         age |   -.153786   .0288493    -5.33   0.000    -.2103982   -.097173
+> 9
+       _cons |   106.3508    1.52185    69.88   0.000     103.3644    109.337
+> 2
+-----------------------------------------------------------------------------
+> -
+
+. clear all
+
+. 
+
+. doedit
+
+. do "/var/folders/3h/ckh812tx30s1h9bsy_bs6hz40000gn/T//SD99141.000000"
+
+. #delimit;
+delimiter now ;
+. clear all;
+
+. set obs 3632;
+number of observations (_N) was 0, now 3,632
+
+. set seed 755331;
+
+. *matrix c=I(7);
+. matrix c=J(7,7,0.25) + 0.75*I(7);
+
+. drawnorm age gender mpd malinger lies check confess, corr(c);
+
+. gen p = .1;
+
+. gen malinger1=malinger==1;
+
+. gen malinger3=malinger==3;
+
+. gen y = log(p/(1-p)) + log(1.2)*age + log(2.4)*age*age+ log(1.4)*gender
+>  + log(1.5)*mpd + log(0.5)*malinger1 + log(1.6)*malinger3
+>  + log(0.8)*lies + log(1.1)*check + log(0.1)*confess + 3*invnormal(runiform
+> ());
+
+. replace age = round(16*age+80);
+(3,632 real changes made)
+
+. recode gender (min/0 = 1) (0/max=2);
+(gender: 3632 changes made)
+
+. recode malinger (min/-1=0) (-1/1=1) (1/max=3);
+(malinger: 3632 changes made)
+
+. recode lies check confess (min/-.7 = 0) (-.7/max=1);
+(lies: 3632 changes made)
+(check: 3632 changes made)
+(confess: 3632 changes made)
+
+. replace mpd = trunc(invpoisson(3,normal(mpd))/3);
+(3,632 real changes made)
+
+. recode mpd (4=3);
+(mpd: 3 changes made)
+
+. gen pf = exp(y)/(1+exp(y));
+
+. recode pf (0/0.5=0) (0.5/1=1);
+(pf: 3631 changes made)
+
+. gen age2 = age*age;
+
+. logit pf age age2 gender mpd i.malinger lies check confess;
+
+Iteration 0:   log likelihood =  -2370.602  
+Iteration 1:   log likelihood =   -2026.25  
+Iteration 2:   log likelihood = -2022.9072  
+Iteration 3:   log likelihood = -2022.9058  
+Iteration 4:   log likelihood = -2022.9058  
+
+Logistic regression                             Number of obs     =      3,63
+> 2
+                                                LR chi2(9)        =     695.3
+> 9
+                                                Prob > chi2       =     0.000
+> 0
+Log likelihood = -2022.9058                     Pseudo R2         =     0.146
+> 7
+
+-----------------------------------------------------------------------------
+> -
+          pf |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval
+> ]
+-------------+---------------------------------------------------------------
+> -
+         age |  -.2719165   .0192246   -14.14   0.000    -.3095961   -.234236
+> 9
+        age2 |   .0016942   .0001187    14.28   0.000     .0014617    .001926
+> 8
+      gender |   .3057802   .0814921     3.75   0.000     .1460586    .465501
+> 9
+         mpd |  -.2733855   .0562248    -4.86   0.000    -.3835841   -.163186
+> 8
+             |
+    malinger |
+          1  |   .0319398   .1071706     0.30   0.766    -.1781106    .241990
+> 3
+          3  |  -.1456578   .1422677    -1.02   0.306    -.4244973    .133181
+> 7
+             |
+        lies |   -.232908   .0921477    -2.53   0.011    -.4135142   -.052301
+> 8
+       check |  -.2382711   .0929704    -2.56   0.010    -.4204897   -.056052
+> 4
+     confess |  -1.810015   .0922896   -19.61   0.000    -1.990899    -1.6291
+> 3
+       _cons |   11.33819   .7844437    14.45   0.000     9.800706    12.8756
+> 7
+-----------------------------------------------------------------------------
+> -
+
+. keep pf age age2 gender mpd malinger lies check confess;
+
+. order pf age age2 gender mpd malinger lies check confess;
+
+. save "~/Documents/2020_Spring/liarliar.dta", replace;
+file ~/Documents/2020_Spring/liarliar.dta saved
+
+. 
+end of do-file
+
+. doedit
+
+. doedit
+
+. pwd
+/Users/adavey/Documents/Missing_Data/Missing_Data_Patterns
+
+. cd ~/Downloads
+/Users/adavey/Downloads
+
+. do "/var/folders/3h/ckh812tx30s1h9bsy_bs6hz40000gn/T//SD99141.000000"
+
+. /*****************************************************************
+> * Sample Cox Proportional Hazards Regression Syntax
+> * BHAN 856, Spring 2020
+> * Adam Davey
+> * Requires outreg2
+> * Type: findit outreg2 to install
+> *****************************************************************/
+. 
+. #delimit;
+delimiter now ;
+. clear all;
+
+. capture log close;

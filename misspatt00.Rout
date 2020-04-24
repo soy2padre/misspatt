@@ -1,6 +1,6 @@
 
-R version 3.6.1 (2019-07-05) -- "Action of the Toes"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -21,6 +21,8 @@ Type 'q()' to quit R.
 
 > # Tabula Rasa
 > rm(list = ls())
+> mydir <- getwd()
+> #setwd('./misspatt')
 > 
 > # Start Timing
 > start <- proc.time()
@@ -117,22 +119,20 @@ Loading required package: paran
 +     mymats <- mkmats(mydata)
 +     
 +     # Run PCA on correlation and polychoric matrices with extraction criteria
-+     myout <- rbind(dopcamat(n = mymats$n, mat = mymats$cmat),
-+                    dopcamat(n = mymats$n, mat = mymats$rmat))
++     myout <- rbind(dopcamat(n = mymats$n, mat = mymats$cmat, ptype=FALSE),
++                    dopcamat(n = mymats$n, mat = mymats$rmat, ptype=FALSE),
++                    dopcamat(n = mymats$n, mat = mymats$cmat, ptype=TRUE),
++                    dopcamat(n = mymats$n, mat = mymats$rmat, ptype=TRUE))
 +     cond <-
 +       rbind(
-+         cbind(iter, n, f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson'),
-+         cbind(
-+           iter,
-+           n,
-+           f = nf[f],
-+           ipc = nipc[ipc],
-+           pctmiss[pm],
-+           'tetrachoric'
-+         )
++         cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson', 'pca'),
++         cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'tetrachoric', 'pca'),
++         cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson', 'paf'),
++         cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'tetrachoric', 'paf')
 +       )
 +     colnames(cond)[5] <- 'pmiss'
 +     colnames(cond)[6] <- 'corrtype'
++     colnames(cond)[7] <- 'ptype'
 +     cbind(cond, myout)
 +   }
 > 
@@ -149,8 +149,8 @@ Loading required package: paran
 > time <- stop - start
 > time
      user    system   elapsed 
-  129.252    20.885 11000.577 
+  117.581    22.898 25662.683 
 > 
 > proc.time()
      user    system   elapsed 
-  129.455    20.929 11000.801 
+  117.744    22.927 25662.852 

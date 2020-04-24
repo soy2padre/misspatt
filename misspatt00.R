@@ -1,5 +1,7 @@
 # Tabula Rasa
 rm(list = ls())
+mydir <- getwd()
+#setwd('./misspatt')
 
 # Start Timing
 start <- proc.time()
@@ -86,22 +88,20 @@ misspatt <- foreach(pm = 1:lm, .combine = rbind) %:%
     mymats <- mkmats(mydata)
     
     # Run PCA on correlation and polychoric matrices with extraction criteria
-    myout <- rbind(dopcamat(n = mymats$n, mat = mymats$cmat),
-                   dopcamat(n = mymats$n, mat = mymats$rmat))
+    myout <- rbind(dopcamat(n = mymats$n, mat = mymats$cmat, ptype=FALSE),
+                   dopcamat(n = mymats$n, mat = mymats$rmat, ptype=FALSE),
+                   dopcamat(n = mymats$n, mat = mymats$cmat, ptype=TRUE),
+                   dopcamat(n = mymats$n, mat = mymats$rmat, ptype=TRUE))
     cond <-
       rbind(
-        cbind(iter, n, f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson'),
-        cbind(
-          iter,
-          samp[n],
-          f = nf[f],
-          ipc = nipc[ipc],
-          pctmiss[pm],
-          'tetrachoric'
-        )
+        cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson', 'pca'),
+        cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'tetrachoric', 'pca'),
+        cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'pearson', 'paf'),
+        cbind(iter, samp[n], f = nf[f], ipc = nipc[ipc], pctmiss[pm], 'tetrachoric', 'paf')
       )
     colnames(cond)[5] <- 'pmiss'
     colnames(cond)[6] <- 'corrtype'
+    colnames(cond)[7] <- 'ptype'
     cbind(cond, myout)
   }
 
