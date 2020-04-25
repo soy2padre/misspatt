@@ -1,6 +1,6 @@
 library(tidyverse)
 library(openxlsx)
-load('misspatt/misspatt00.Rdata')
+load('misspatt00.Rdata')
 colnames(misspatt)[2] <- 'n'
 
 myout <- misspatt %>%
