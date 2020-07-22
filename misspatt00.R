@@ -29,7 +29,7 @@ source('Kaiser_Jolliffe_Proflik.R')
 source('EKC.R')
 
 # Simulation Parameters
-reps <- 1000
+reps <- 2
 c <- .3
 r <- .7
 
@@ -106,8 +106,8 @@ misspatt <- foreach(pm = 1:lm, .combine = rbind) %:%
   }
 
 # Convert and save results
-misspatt <- as.data.table(misspatt)
-save(misspatt, file = 'misspatt00.Rdata')
+#misspatt <- as.data.table(misspatt)
+#save(misspatt, file = 'misspatt00.Rdata')
 
 # Stop cluster
 stopImplicitCluster()
